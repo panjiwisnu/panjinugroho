@@ -1,0 +1,154 @@
+<?php include "connect/koneksi.php" ?>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+<link rel="stylesheet" href="asset/font-awesome/css/font-awesome.min.css">
+
+	<body>
+
+</head>
+
+<body>
+<div class="wrapper">
+	<header>
+		<body class="container">
+
+		<h1 align="center">SISTEM APLIKASI KASIR</h1>
+
+		<nav class="navbar navbar-inverse">
+			<ul class="nav navbar-nav navbar-left">
+				<li><a href="home.php" ><img src="icon/rumah.png"/> <b>Home</b></a></li>
+				<li><a href="tambah_barang.php"><img src="icon/notebook.png"  /> <b>+Tambah Buku</b></a></li>
+				<li><a href="item.php"><img src="icon/library.png"  /> <b>Cek Item</b></a></li>
+				<li><a href="transaksi.php"><img src="icon/transaksi.png"  /> <b>Transaksi Penjualan</b></a></li>
+				<li><a href="logout.php"><img src="icon/out.png"><b>Keluar</b></a></li>
+				<li>
+<form method="post" action="search_barang.php" enctype="multipart/form-data" class="navbar-form navbar-left" role="search">
+		        		<div class="form-group">
+			        		<input type="text" class="form-control" name="brg" />
+			        		<input type="submit" class="btn btn-primary" value="Search Buku" />
+			        	</div>
+			        </form>
+				</li>
+
+    			</li>
+			</ul>
+		</nav>
+	</header>
+
+
+			<center>
+			<table class="tabel">
+		    <tr>
+		        <td>
+		        	<td>
+				<form action="delete.php" method="post" enctype="multipart/form-data">
+					<select name="kd" class="btn btn-default">
+						<?php
+							$lihat = mysql_query("select * from daftarbuku");
+							while($data = mysql_fetch_array($lihat))
+							{
+								echo "<option ' id='kd' value=".$data['kodebuku'].">".$data['kodebuku']."</option>";
+							}
+						?>
+					</select><input type="submit" value="Delete Buku" class="btn btn-primary" />
+				</form>
+			</td>
+			<td style="padding:35px;"></td>
+
+				<td>
+				<form action="update.php" method="post" enctype="multipart/form-data">
+					<select name="kd" class="btn btn-default">	
+						<?php
+							$lihat = mysql_query("select * from daftarbuku");
+							while($data = mysql_fetch_array($lihat))
+							{
+								echo "<option onclick='isi()' id='kd' value=".$data['kodebuku'].">".$data['kodebuku']."</option>";
+							}
+						?>
+					</select><input type="submit" value="Update Buku" class="btn btn-primary" />
+				</form>
+			</td>
+			</tr>
+			</table>
+			
+<div class="panel panel-default">
+			<div class="panel-body" align="center">
+		        <div style="width:700px; float:center">
+		            <table class="table" border="3" bgcolor="white">
+					<div class="form-group">
+			        </div>
+			    </form>
+	</center><hr>
+
+
+	<br><center><h4>DATA BUKU</center></br>
+	
+		<tr style='background-color:white'><td><b>No.</b></td>
+			<td align="center" width="130"><b>Kode Buku</b></td>
+			<td align="center"><b>Nama Buku</b></td>
+			<td align="center"><b>Penulis</b></td>
+			<td align="center"> <b>Penerbit</b></td>
+			<td align="center"><b>Tersedia</b></td>
+			<td align="center" width="100"><b>Harga</b></td>
+		</tr>
+	<?php
+	$dataPerPage = 6 ; //Jumlah Page Yang inign ditampilkan di halaman depan
+							if(isset($_GET['page']))
+							{
+								$noPage = $_GET['page'];
+							}
+							else $noPage = 1;
+							
+							$offset = ($noPage - 1) * $dataPerPage;
+							
+		            $no = 1;
+	$lihat = mysql_query("select *,penerbit as 'penerbit' from daftarbuku");
+		while($hasil = mysql_fetch_array($lihat)) {
+				echo "
+					<tr>
+						<td>".$no."</td>
+						<td>".$hasil['kodebuku']."</td>
+				        <td>".$hasil['namabuku']."</td>
+				    	<td>".$hasil['penulis']."</td>
+				        <td>".$hasil['penerbit']."</td>
+				        <td>".$hasil['tersedia']."</td>
+				        <td> Rp. ".$hasil['harga']."</td>
+				    </tr>"
+				;
+				$no ++;
+		            }
+		
+	?>
+	</table>
+<?php
+$query = "SELECT COUNT(*) AS jumData FROM daftarbuku";
+		$hasil = mysql_query($query);
+		$data = mysql_fetch_array($hasil);
+		$jumData = $data['jumData'];
+	$jumPage = ceil($jumData/$dataPerPage);
+		if ($noPage > 1) echo  "<a id='page' href='".$_SERVER['PHP_SELF']."?page=".($noPage-1)."'>&lt;&lt;</a>";
+	for($page = 1; $page <= $jumPage; $page++)
+	{
+		if ((($page >= $noPage - 3) && ($page <= $noPage + 3)) || ($page == 1) || ($page == $jumPage))
+			 {
+			if (($page != ($jumPage - 1)) && ($page == $jumPage))
+				{
+					echo "...";
+					}
+					if ($page == $noPage)
+						{
+					echo " <b>".$page."</b> ";
+						}
+					else 
+				{
+				echo " <a id='page' href='".$_SERVER['PHP_SELF']."?page=".$page."'>".$page."</a> ";
+					}
+						
+					$page = $page;
+					}
+				}
+		if ($noPage < $jumPage) echo "<a id='page' href='".$_SERVER['PHP_SELF']."?page=".($noPage+1)."'>&gt;&gt;</a>";
+			?>
+           </div>
+    </div>
+</div>
+</body>	
